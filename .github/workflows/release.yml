@@ -1,0 +1,30 @@
+name: release
+
+on: push
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: setup golang
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.19.x'
+      - name: show go version
+        run: go version
+      - name: build
+        run: env CGO_ENABLED=0 make
+      - name: build for arm64
+        run: env CGO_ENABLED=0 GOARCH=arm64 make
+      - name: release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Latest files
+          tag_name: latest
+          files: |
+            x11link-server/x11link-server
+            x11link-client/x11link-client
+            x11link-server/x11link-server.arm64
+            x11link-client/x11link-client.arm64
